@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Интернет — территория безопасности | Интерактивный плакат</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color:#fff; min-height:100vh; padding-bottom:60px;
+  }
+  .container { max-width:1100px; margin:0 auto; padding:20px; }
+
+  /* ===== ШАПКА ===== */
+  header {
+    text-align:center; padding:50px 20px 30px;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3), transparent);
+    border-radius:0 0 40px 40px;
+  }
+  .shield-big {
+    font-size:80px; display:inline-block; animation: pulse 2s infinite;
+    filter: drop-shadow(0 0 20px rgba(0,255,170,0.6));
+  }
+  @keyframes pulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  h1 {
+    font-size: clamp(26px, 5vw, 44px); margin:15px 0 10px;
+    background: linear-gradient(90deg, #00e676, #00b0ff, #b388ff);
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .subtitle { font-size:18px; opacity:.85; }
+
+  /* ===== ПЕРЕЧЁТ ПРАВИЛ ===== */
+  .rules { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px,1fr)); gap:18px; margin-top:35px; }
+  .rule-card {
+    background: rgba(255,255,255,0.08); border-radius:18px; padding:24px;
+    cursor:pointer; transition: all .35s; border:2px solid transparent;
+    position:relative; overflow:hidden;
+  }
+  .rule-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color:#00e676; background: rgba(0,230,118,0.12);
+    box-shadow: 0 10px 30px rgba(0,230,118,0.25);
+  }
+  .rule-card .emoji { font-size:44px; margin-bottom:12px; }
+  .rule-card h3 { font-size:20px; margin-bottom:8px; }
+  .rule-card p { font-size:15px; opacity:.8; line-height:1.5; }
+  .rule-card .more {
+    margin-top:12px; font-size:13px; color:#00e676; font-weight:bold;
+    display:none; animation: fadeIn .4s;
+  }
+  .rule-card.open .more { display:block; }
+  .hint-tap { font-size:12px; color:#b388ff; margin-top:8px; font-style:italic; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:translateY(0);} }
+
+  /* ===== ПЕРЕВОРАЧИВАЮЩИЕСЯ КАРТОЧКИ ===== */
+  .section-title { text-align:center; font-size:30px; margin:50px 0 25px; }
+  .flip-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:20px; }
+  .flip-card { perspective: 1000px; height:220px; cursor:pointer; }
+  .flip-inner {
+    position:relative; width:100%; height:100%;
+    transform-style:preserve-3d; transition: transform .6s;
+  }
+  .flip-card.flipped .flip-inner { transform: rotateY(180deg); }
+  .flip-face {
+    position:absolute; inset:0; border-radius:18px; padding:22px;
+    backface-visibility:hidden; display:flex; flex-direction:column;
+    justify-content:center; align-items:center; text-align:center;
+  }
+  .flip-front {
+    background: linear-gradient(135deg,#1e3c72,#2a5298);
+    border:2px solid rgba(255,255,255,0.15);
+  }
+  .flip-back {
+    background: linear-gradient(135deg,#11998e,#38ef7d);
+    transform: rotateY(180deg); color:#05261e; font-weight:600;
+  }
+  .flip-face .emoji { font-size:50px; margin-bottom:10px; }
+  .flip-face h4 { font-size:18px; }
+  .flip-back p { font-size:15px; line-height:1.45; }
+  .flip-tip { font-size:12px; opacity:.7; margin-top:10px; }
+
+  /* ===== ЧЕК-ЛИСТ ===== */
+  .checklist {
+    background: rgba(255,255,255,0.08); border-radius:22px;
+    padding:30px; max-width:640px; margin:0 auto;
+  }
+  .check-item {
+    display:flex; align-items:center; gap:14px; padding:12px;
+    border-radius:12px; cursor:pointer; transition: background .3s;
+    font-size:17px;
+  }
+  .check-item:hover { background: rgba(255,255,255,0.08); }
+  .checkbox {
+    width:28px; height:28px; border-radius:8px; border:3px solid #00e676;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; color:transparent; transition: all .3s; flex-shrink:0;
+  }
+  .check-item.done .checkbox { background:#00e676; color:#05261e; }
+  .check-item.done { text-decoration: line-through; opacity:.55; }
+  .progress-wrap { margin-top:18px; }
+  .progress-bar {
+    height:14px; background:rgba(255,255,255,0.15); border-radius:10px; overflow:hidden;
+  }
+  .progress-fill {
+    height:100%; width:0%;
+    background: linear-gradient(90deg,#00e676,#00b0ff);
+    transition: width .5s; border-radius:10px;
+  }
+  .progress-text { text-align:center; margin-top:8px; font-size:14px; opacity:.8; }
+
+  /* ===== МИНИ-ВИКТОРИНА ===== */
+  .quiz-box {
+    background: rgba(255,255,255,0.08); border-radius:22px;
+    padding:30px; max-width:640px; margin:0 auto; text-align:center;
+  }
+  .quiz-q { font-size:20px; font-weight:600; margin-bottom:18px; line-height:1.4; }
+  .quiz-opts { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .quiz-opt {
+    background: rgba(255,255,255,0.1); border:2px solid transparent;
+    border-radius:14px; padding:14px; cursor:pointer; transition: all .3s;
+    font-size:15px;
+  }
+  .quiz-opt:hover { background: rgba(0,176,255,0.2); border-color:#00b0ff; }
+  .quiz-opt.correct { background: rgba(0,230,118,0.35); border-color:#00e676; }
+  .quiz-opt.wrong { background: rgba(255,82,82,0.35); border-color:#ff5252; }
+  .quiz-exp { margin-top:16px; font-size:15px; min-height:44px; opacity:.9; }
+  .quiz-next {
+    margin-top:10px; background:#00e676; color:#05261e; border:none;
+    padding:12px 30px; border-radius:25px; font-size:16px; font-weight:bold;
+    cursor:pointer; display:none; margin-inline:auto; transition: transform .2s;
+  }
+  .quiz-next:hover { transform: scale(1.05); }
+  .quiz-score { margin-top:14px; font-size:15px; color:#b388ff; font-weight:bold; }
+
+  footer { text-align:center; margin-top:50px; opacity:.6; font-size:14px; }
+  @media (max-width:600px){
+    .quiz-opts { grid-template-columns:1fr; }
+    .check-item { font-size:15px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <span class="shield-big">🛡️</span>
+    <h1>Интернет — территория безопасности</h1>
+    <p class="subtitle">Интерактивный плакат · Нажимай, наводи и переворачивай карточки!</p>
+  </header>
+
+  <!-- ПРАВИЛА -->
+  <div class="rules">
+    <div class="rule-card" onclick="this.classList.toggle('open')">
+      <div class="emoji">🔑</div>
+      <h3>Защити пароли</h3>
+      <p>Надёжный пароль — длина от 8 символов, буквы, цифры и знаки. Не используй даты рождения.</p>
+      <div class="more">💡 Проще всего запомнить длинную фразу: «МояЛюбимаяКошка7Лет!». Один пароль — один сайт. Менеджер паролей поможет хранить их безопасно.</div>
+      <div class="hint-tap">нажми, чтобы узнать больше ▸</div>
+    </div>
+    <div class="rule-card" onclick="this.classList.toggle('open')">
+      <div class="emoji">🎣</div>
+      <h3>Не клевись на фишинг</h3>
+      <p>Письма «Ваш аккаунт заблокирован!» — частая приманка мошенников.</p>
+      <div class="more">💡 Проверяй адрес отправителя и ссылку перед кликом. Банк и соцсети не просят пароли и коды из СМС. Сомневаешься — зайди на сайт сам через закладку.</div>
+      <div class="hint-tap">нажми, чтобы узнать больше ▸</div>
+    </div>
+    <div class="rule-card" onclick="this.classList.toggle('open')">
+      <div class="emoji">🔒</div>
+      <h3>Береги личные данные</h3>
+      <p>Адрес, телефон, фото документов — не для общего доступа.</p>
+      <div class="more">💡 Настрой приватность в соцсетях: «только друзья». Не выкладывай билеты, права, штрих-коды. Мошенникам хватает мелочей, чтобы тебя обмануть.</div>
+      <div class="hint-tap">нажми, чтобы узнать больше ▸</div>
+    </div>
+    <div class="rule-card" onclick="this.classList.toggle('open')">
+      <div class="emoji">👾</div>
+      <h3>Остерегайся вирусов</h3>
+      <p>Не скачивай файлы из неизвестных источников и «бесплатные» взломы игр.</p>
+      <div class="more">💡 Держи антивирус включённым, а систему — обновлённой. Вирус прячется даже за файлом «мем.jpg.exe». Если антивирус ругается — верь ему.</div>
+      <div class="hint-tap">нажми, чтобы узнать больше ▸</div>
+    </div>
+    <div class="rule-card" onclick="this.classList.toggle('open')">
+      <div class="emoji">🤝</div>
+      <h3>Вежливость в сети</h3>
+      <p>Кибербуллинг — тоже насилие. Не трави и не молчи, если травят тебя.</p>
+      <div class="more">💡 Скриншоть оскорбления, блокируй агрессора, расскажи взрослым, которым доверяешь. Твоя помощь может спасти друга.</div>
+      <div class="hint-tap">нажми, чтобы узнать больше ▸</div>
+    </div>
+    <div class="rule-card" onclick="this.classList.toggle('open')">
+      <div class="emoji">👣</div>
+      <h3>Цифровой след</h3>
+      <p>Всё, что попало в сеть, остаётся там навсегда.</p>
+      <div class="more">💡 Вирусную шутку, спорный пост или личное фото могут увидеть родители, учителя и будущий работодатель. Публикуй только то, за что не будет стыдно через 10 лет.</div>
+      <div class="hint-tap">нажми, чтобы узнать больше ▸</div>
+    </div>
+  </div>
+
+  <!-- КАРТОЧКИ -->
+  <h2 class="section-title">🔄 Переверни карточку</h2>
+  <div class="flip-grid">
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="emoji">📞</div>
+          <h4>«Мама, я попал в беду»</h4>
+          <div class="flip-tip">нажми на карточку ⟳</div>
+        </div>
+        <div class="flip-face flip-back"><p>Звонок «от друга»: «скинь деньги, срочно». Схема мошенников! Положи трубку и позвони этому человеку сам по обычному номеру. 😠</p></div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="emoji">🎁</div>
+          <h4>«Выиграй iPhone за подписку!»</h4>
+          <div class="flip-tip">нажми на карточку ⟳</div>
+        </div>
+        <div class="flip-face flip-back"><p>Бесплатный сыр — только в мышеловке. Розыши данных, платных «доставок призов» и подписок — обман. 🚫</p></div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="emoji">📱</div>
+          <h4>Код из СМС</h4>
+          <div class="flip-tip">нажми на карточку ⟳</div>
+        </div>
+        <div class="flip-face flip-back"><p>Код из СМС — это ключ от твоих аккаунтов. Никому и никогда его не говори, даже «сотрудникам банка». 🔑</p></div>
+      </div>
+    </div>
+    <div class="flip-card" onclick="this.classList.toggle('flipped')">
+      <div class="flip-inner">
+        <div class="flip-face flip-front">
+          <div class="emoji">🌐</div>
+          <h4>Открытый Wi-Fi</h4>
+          <div class="flip-tip">нажми на карточку ⟳</div>
+        </div>
+        <div class="flip-face flip-back"><p>В кафе и на вокзале через общественный Wi-Fi не вводи пароли и платёжные данные. Лучше — мобильный интернет. 📶</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ЧЕК-ЛИСТ -->
+  <h2 class="section-title">✅ Чек-лист безопасного пользователя</h2>
+  <div class="checklist" id="checklist">
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkbox">✓</div><span>Пароли длинные и разные на каждом сайте</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkbox">✓</div><span>Включена двухфакторная аутентификация</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkbox">✓</div><span>Профиль в соцсетях закрыт от незнакомцев</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkbox">✓</div><span>Антивирус установлен и обновлён</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkbox">✓</div><span>Я не рассказываю незнакомцам о себе и семье</span></div>
+    <div class="check-item" onclick="toggleCheck(this)"><div class="checkbox">✓</div><span>Я знаю, к кому обратиться, если случилась беда в сети</span></div>
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" id="pfill"></div></div>
+      <div class="progress-text" id="ptext">Отмечено: 0 из 6</div>
+    </div>
+  </div>
+
+  <!-- ВИКТОРИНА -->
+  <h2 class="section-title">🧠 Мини-викторина</h2>
+  <div class="quiz-box">
+    <div class="quiz-q" id="qq"></div>
+    <div class="quiz-opts" id="qo"></div>
+    <div class="quiz-exp" id="qe"></div>
+    <button class="quiz-next" id="qn" onclick="nextQ()">Следующий вопрос ▸</button>
+    <div class="quiz-score" id="qs">Вопрос 1 из 5</div>
+  </div>
+
+  <footer>Плакат «Интернет — территория безопасности» · Будь умнее мошенников! 🛡️</footer>
+</div>
+
+<script>
+// ===== ЧЕК-ЛИСТ =====
+function toggleCheck(el){
+  el.classList.toggle('done');
+  const items = document.querySelectorAll('.check-item');
+  const done = document.querySelectorAll('.check-item.done').length;
+  document.getElementById('pfill').style.width = (done/items.length*100)+'%';
+  document.getElementById('ptext').textContent = 'Отмечено: '+done+' из '+items.length;
+  if(done === items.length) document.getElementById('ptext').textContent = '🎉 Отлично! Ты — настоящий защитник сети!';
+}
+
+// ===== ВИКТОРИНА =====
+const questions = [
+  {q:'Незнакомец в игре просит твой пароль, обещая подарки. Что делать?',
+   o:['Дать пароль за подарки','Отказаться и заблокировать его'], a:1,
+   e:'Пароль — только твой. Никакие подарки не стоят доступа к твоим аккаунтам.'},
+  {q:'Пришло письмо: «Ваш банк заблокирован, введите пароль по ссылке». Что делать?',
+   o:['Скорее ввести пароль','Удалить письмо и позвонить в банк по официальному номеру'], a:1,
+   e:'Это фишинг! Банки никогда не просят пароли в письмах и по ссылкам.'},
+  {q:'Другу пишут оскорбления в чате. Как лучше поступить?',
+   o:['Сделать скриншот и рассказать взрослым','Ответить ещё грубее'], a:0,
+   e:'Скриншоты — доказательства. Взрослые помогут остановить травлю.'},
+  {q:'Тебе звонят «из банка» и просят код из СМС. Что делать?',
+  o:['Назвать код, это же банк','Сбросить и перезвонить в банк самому'], a:1,
+   e:'Сотрудники банка НИКОГДА не спрашивают коды. Это мошенник!'},
+  {q:'Где безопаснее всего оставлять личные данные?',
+   o:['Нигде, только где действительно необходимо','В открытом профиле соцсети'], a:0,
+   e:'Чем меньше данных в открытом доступе, тем сложнее тебя обмануть.'}
+];
+let cur = 0, score = 0, answered = false;
+
+function showQ(){
+  answered = false;
+  const q = questions[cur];
+  document.getElementById('qq').textContent = q.q;
+  const box = document.getElementById('qo');
+  box.innerHTML = '';
+  q.o.forEach((opt,i)=>{
+    const b = document.createElement('div');
+    b.className = 'quiz-opt';
+    b.textContent = opt;
+    b.onclick = ()=>answer(i,b,q);
+    box.appendChild(b);
+  });
+  document.getElementById('qe').textContent = '';
+  document.getElementById('qn').style.display = 'none';
+  document.getElementById('qs').textContent = 'Вопрос '+(cur+1)+' из '+questions.length+' · Правильных: '+score;
+}
+function answer(i,btn,q){
+  if(answered) return;
+  answered = true;
+  const opts = document.querySelectorAll('.quiz-opt');
+  opts.forEach((b,j)=>{ if(j===q.a) b.classList.add('correct'); });
+  if(i===q.a){ score++; document.getElementById('qe').textContent = '✅ Верно! '+q.e; }
+  else { btn.classList.add('wrong'); document.getElementById('qe').textContent = '❌ Не совсем. '+q.e; }
+  document.getElementById('qn').style.display = 'block';
+  document.getElementById('qn').textContent = (cur===questions.length-1) ? 'Показать результат 🏁' : 'Следующий вопрос ▸';
+  document.getElementById('qs').textContent = 'Вопрос '+(cur+1)+' из '+questions.length+' · Правильных: '+score;
+}
+function nextQ(){
+  if(cur < questions.length-1){ cur++; showQ(); }
+  else {
+    document.getElementById('qq').textContent = '🏁 Твой результат: '+score+' из '+questions.length+'!';
+    let msg = score===5 ? '👑 Гуру кибербезопасности! Настоящий защитник сети!'
+      : score>=3 ? '🛡️ Неплохо! Ты почти готов к безопасному интернету.'
+      : '🌱 Начало положено! Перечитай плакат и попробуй снова.';
+    document.getElementById('qe').textContent = msg;
+    document.getElementById('qo').innerHTML = '';
+    document.getElementById('qn').textContent = 'Пройти ещё раз ↺';
+    document.getElementById('qn').onclick = ()=>{ cur=0; score=0; document.getElementById('qn').onclick=nextQ; showQ(); };
+  }
+}
+showQ();
+</script>
+</body>
+</html>
