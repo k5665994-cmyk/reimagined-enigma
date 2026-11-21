@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Квест: Интернет — территория безопасности</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; }
+  body { background: linear-gradient(160deg, #0f1c3f 0%, #1a2f6b 55%, #27408b 100%); min-height: 100vh; color: #fff; display: flex; justify-content: center; padding: 20px; }
+  .wrap { width: 100%; max-width: 760px; }
+  .card { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); border-radius: 20px; padding: 28px; backdrop-filter: blur(6px); box-shadow: 0 10px 40px rgba(0,0,0,0.35); }
+  h1 { text-align: center; font-size: 30px; margin-bottom: 6px; }
+  h1 span { color: #ffd54f; }
+  .subtitle { text-align: center; opacity: 0.85; margin-bottom: 18px; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 15px; }
+  .progress-outer { background: rgba(255,255,255,0.15); border-radius: 12px; height: 14px; overflow: hidden; margin-bottom: 22px; }
+  .progress-inner { height: 100%; width: 0%; background: linear-gradient(90deg, #ffd54f, #ff8a65); transition: width .4s; }
+  .station-img { display: flex; justify-content: center; margin: 6px 0 14px; }
+  .station-img svg { width: 210px; height: 150px; }
+  .station-name { text-align: center; font-size: 20px; font-weight: bold; color: #ffd54f; margin-bottom: 4px; }
+  .qnum { text-align: center; opacity: 0.75; font-size: 13px; margin-bottom: 14px; }
+  .question { font-size: 20px; font-weight: 600; line-height: 1.4; margin-bottom: 18px; }
+  .option { display: block; width: 100%; text-align: left; background: rgba(255,255,255,0.1); border: 2px solid rgba(255,255,255,0.25); color: #fff; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; font-size: 16px; cursor: pointer; transition: all .2s; }
+  .option:hover { background: rgba(255,255,255,0.2); transform: translateX(4px); }
+  .option.correct { background: rgba(46,204,113,0.35); border-color: #2ecc71; }
+  .option.wrong { background: rgba(231,76,60,0.3); border-color: #e74c3c; }
+  .option:disabled { cursor: default; }
+  .feedback { border-radius: 12px; padding: 14px 16px; margin-top: 12px; font-size: 15px; line-height: 1.5; display: none; }
+  .feedback.good { background: rgba(46,204,113,0.18); border-left: 4px solid #2ecc71; }
+  .feedback.bad { background: rgba(231,76,60,0.18); border-left: 4px solid #e74c3c; }
+  .btn { display: block; margin: 18px auto 0; background: linear-gradient(90deg, #ffd54f, #ff8a65); border: none; color: #1a2f6b; font-size: 17px; font-weight: bold; padding: 13px 38px; border-radius: 30px; cursor: pointer; transition: transform .2s; }
+  .btn:hover { transform: scale(1.05); }
+  .hidden { display: none; }
+  .intro-list { margin: 14px 0 18px 20px; line-height: 1.8; font-size: 15px; }
+  .starline { text-align: center; font-size: 22px; margin-bottom: 10px; }
+  .cert { text-align: center; }
+  .cert h2 { font-size: 26px; margin-bottom: 8px; }
+  .cert .rank { font-size: 24px; color: #ffd54f; font-weight: bold; margin: 12px 0; }
+  .cert .score { font-size: 40px; font-weight: bold; color: #ffd54f; }
+  .medal { font-size: 70px; margin: 10px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ЭКРАН СТАРТА -->
+  <div id="startScreen" class="card" style="text-align:center">
+    <div class="station-img">
+      <svg viewBox="0 0 210 150" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="105" cy="75" r="60" fill="#1a2f6b" stroke="#5c7cfa" stroke-width="2"/>
+        <ellipse cx="105" cy="75" rx="60" ry="22" fill="none" stroke="#5c7cfa" stroke-width="1.5" opacity="0.6"/>
+        <ellipse cx="105" cy="75" rx="22" ry="60" fill="none" stroke="#5c7cfa" stroke-width="1.5" opacity="0.6"/>
+        <circle cx="105" cy="45" r="7" fill="#ffd54f"/><circle cx="160" cy="75" r="5" fill="#2ecc71"/>
+        <circle cx="55" cy="65" r="5" fill="#ff8a65"/><circle cx="130" cy="115" r="6" fill="#5c7cfa"/>
+        <line x1="105" y1="45" x2="160" y2="75" stroke="#5c7cfa" stroke-width="1" opacity="0.7"/>
+        <line x1="105" y1="45" x2="55" y2="65" stroke="#5c7cfa" stroke-width="1" opacity="0.7"/>
+        <line x1="55" y1="65" x2="130" y2="115" stroke="#5c7cfa" stroke-width="1" opacity="0.7"/>
+        <rect x="88" y="62" width="34" height="26" rx="5" fill="#ffd54f"/>
+        <path d="M95 62 v-6 a10 10 0 0 1 20 0 v6" fill="none" stroke="#ffd54f" stroke-width="4"/>
+        <circle cx="105" cy="74" r="4" fill="#1a2f6b"/>
+      </svg>
+    </div>
+    <h1>Интернет — <span>территория безопасности</span></h1>
+    <p class="subtitle">Квест-игра для кибердетективов · 20 вопросов · 5 станций</p>
+    <p style="font-size:15px; opacity:0.9; max-width:560px; margin:0 auto 10px;">
+      Ты — детектив цифрового отдела! Злодей Глом распространил по Сети 20 ловушек.
+      Пройди 5 станций, ответь на все вопросы и получи звание Главного кибердетектива!
+    </p>
+    <ul class="intro-list" style="text-align:left; display:inline-block">
+      <li>🔒 Станция «Крепость паролей» — 4 вопроса</li>
+      <li>🎣 Станция «Рыбаки на фишинге» — 4 вопроса</li>
+      <li>🕵️ Станция «Секретные данные» — 4 вопроса</li>
+      <li>🦠 Станция «Вирусное болото» — 4 вопроса</li>
+      <li>💬 Станция «Осторожно, общение» — 4 вопроса</li>
+    </ul>
+    <br>
+    <button class="btn" onclick="startGame()">Начать квест 🔍</button>
+  </div>
+
+  <!-- ЭКРАН ИГРЫ -->
+  <div id="gameScreen" class="card hidden">
+    <div class="topbar">
+      <span id="stationLabel">Станция 1/5</span>
+      <span id="starsLabel">⭐ 0</span>
+      <span id="qLabel">Вопрос 1/20</span>
+    </div>
+    <div class="progress-outer"><div class="progress-inner" id="progressBar"></div></div>
+    <div class="station-img" id="stationImg"></div>
+    <div class="station-name" id="stationName"></div>
+    <div class="qnum" id="qNum"></div>
+    <div class="question" id="questionText"></div>
+    <div id="optionsBox"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn hidden" id="nextBtn" onclick="nextQuestion()">Далее ➜</button>
+  </div>
+
+  <!-- ЭКРАН ФИНАЛА -->
+  <div id="endScreen" class="card cert hidden">
+    <div class="medal" id="medal">🏆</div>
+    <h2>Квест пройден!</h2>
+    <div class="score"><span id="finalScore">0</span> / 20</div>
+    <div class="rank" id="finalRank"></div>
+    <div id="finalMsg" style="opacity:0.9; max-width:540px; margin:0 auto 8px;"></div>
+    <p style="font-size:15px; margin-top:14px;">🔎 Помни три золотых правила детектива:<br>
+    <b>1.</b> Никому не сообщай пароли и личные данные.<br>
+    <b>2.</b> Не доверяй ссылкам и подаркам от незнакомцев.<br>
+    <b>3.</b> Если что-то тревожит в сети — расскажи взрослым.</p>
+    <button class="btn" onclick="location.reload()">Пройти снова 🔄</button>
+  </div>
+</div>
+
+<script>
+// ====== ДАННЫЕ КВЕСТА: 5 СТАНЦИЙ × 4 ВОПРОСА = 20 ======
+const svgLock = `<svg viewBox="0 0 210 150"><rect x="55" y="30" width="100" height="70" rx="8" fill="#2c3e66" stroke="#5c7cfa" stroke-width="2"/><rect x="65" y="40" width="80" height="50" rx="4" fill="#101c3a"/><rect x="85" y="115" width="40" height="6" rx="3" fill="#5c7cfa"/><rect x="70" y="122" width="70" height="5" rx="2.5" fill="#3d5a99"/><path d="M95 55 v-8 a10 10 0 0 1 20 0 v8" fill="none" stroke="#ffd54f" stroke-width="4"/><rect x="88" y="55" width="34" height="24" rx="5" fill="#ffd54f"/><circle cx="105" cy="66" r="4" fill="#2c3e66"/><circle cx="150" cy="28" r="9" fill="#2ecc71"/><path d="M146 28 l3 3 5 -6" stroke="#fff" stroke-width="2.5" fill="none"/></svg>`;
+
+const svgPhish = `<svg viewBox="0 0 210 150"><rect x="50" y="35" width="95" height="60" rx="6" fill="#f5f5f5"/><rect x="50" y="35" width="95" height="14" rx="6" fill="#e74c3c"/><circle cx="60" cy="42" r="3" fill="#fff"/><circle cx="70" cy="42" r="3" fill="#fff"/><line x1="58" y1="60" x2="120" y2="60" stroke="#999" stroke-width="3"/><line x1="58" y1="70" x2="110" y2="70" stroke="#999" stroke-width="3"/><line x1="58" y1="80" x2="100" y2="80" stroke="#c33" stroke-width="3"/><path d="M145 65 q30 5 40 30" fill="none" stroke="#888" stroke-width="3"/><path d="M185 92 l8 14 -14 -4 z" fill="#888"/><circle cx="188" cy="100" r="4" fill="#e74c3c"/><text x="150" y="135" font-size="11" fill="#ff8a65">ВЫ ВЫИГРАЛИ МИЛЛИОН!</text></svg>`;
+
+const svgSecret = `<svg viewBox="0 0 210 150"><circle cx="105" cy="60" r="34" fill="#f0c27b"/><rect x="88" y="88" width="34" height="28" rx="8" fill="#5c7cfa"/><rect x="70" y="94" width="16" height="22" rx="6" fill="#5c7cfa"/><rect x="124" y="94" width="16" height="22" rx="6" fill="#5c7cfa"/><rect x="70" y="26" width="70" height="14" rx="7" fill="#1a2f6b"/><rect x="88" y="20" width="34" height="34" rx="4" fill="#1a2f6b"/><rect x="82" y="50" width="46" height="6" rx="3" fill="#1a2f6b"/><circle cx="105" cy="120" r="12" fill="none" stroke="#ffd54f" stroke-width="4"/><rect x="102" y="112" width="6" height="10" rx="2" fill="#ffd54f"/><path d="M97 112 v-4 a8 8 0 0 1 16 0 v4" fill="none" stroke="#ffd54f" stroke-width="3"/></svg>`;
+
+const svgVirus = `<svg viewBox="0 0 210 150"><circle cx="75" cy="75" r="30" fill="#9b59b6"/><circle cx="66" cy="68" r="5" fill="#fff"/><circle cx="86" cy="68" r="5" fill="#fff"/><circle cx="66" cy="68" r="2.2" fill="#333"/><circle cx="86" cy="68" r="2.2" fill="#333"/><path d="M64 88 q11 -8 22 0" stroke="#fff" stroke-width="3" fill="none"/><line x1="75" y1="42" x2="75" y2="28" stroke="#9b59b6" stroke-width="4"/><line x1="75" y1="108" x2="75" y2="122" stroke="#9b59b6" stroke-width="4"/><line x1="48" y1="60" x2="34" y2="50" stroke="#9b59b6" stroke-width="4"/><line x1="102" y1="60" x2="116" y2="50" stroke="#9b59b6" stroke-width="4"/><rect x="126" y="52" width="58" height="46" rx="8" fill="#2c3e66" stroke="#2ecc71" stroke-width="2"/><path d="M143 75 l8 8 16 -18" stroke="#2ecc71" stroke-width="6" fill="none" stroke-linecap="round"/></svg>`;
+
+const svgChat = `<svg viewBox="0 0 210 150"><rect x="25" y="30" width="160" height="90" rx="14" fill="#2c3e66" stroke="#5c7cfa" stroke-width="2"/><path d="M45 120 l0 14 16 -14 z" fill="#2c3e66"/><rect x="38" y="44" width="80" height="16" rx="8" fill="#e74c3c"/><text x="46" y="56" font-size="10" fill="#fff">Ты нуб, уходи! 😠</text><rect x="92" y="66" width="86" height="16" rx="8" fill="#2ecc71"/><text x="98" y="78" font-size="10" fill="#fff">Я с тобой! 💚</text><rect x="38" y="88" width="70" height="16" rx="8" fill="#ffd54f"/><text x="45" y="100" font-size="10" fill="#333">Так не шутят!</text><circle cx="190" cy="40" r="11" fill="#ffd54f"/><path d="M184 40 l3 3 6 -7" stroke="#1a2f6b" stroke-width="2.5" fill="none"/></svg>`;
+
+const stations = [
+  { name: "🔒 Станция 1. Крепость паролей", img: svgLock, q: [
+    { t: "Какой из паролей самый надёжный?", o: ["12345678", "пароль2010", "Qw7#mK9$zLp2!", "01012010"], c: 2,
+      e: "Надёжный пароль — длинный, со строчными и заглавными буквами, цифрами и символами. Даты рождения и простые ряды цифр подбираются первыми." },
+    { t: "Можно ли использовать один и тот же пароль для всех сайтов?", o: ["Да, так удобнее и пароль точно не забудешь", "Нет: если один пароль украдут, взломают сразу все аккаунты", "Да, если пароль длинный", "Можно, но только для игр"], c: 1,
+      e: "Если злоумышленник узнает один пароль, он попробует его на почте, в играх и соцсетях. У каждого важного аккаунта — свой пароль." },
+    { t: "В новостях написали, что произошла утечка данных с сайта, где ты зарегистрирован. Что делать?", o: ["Ничего, меня это не коснётся", "Рассказать пароль друзьям, чтобы вместе проверить", "Срочно сменить пароль — и на этом сайте, и везде, где он повторялся", "Удалить приложение"], c: 2,
+      e: "При утечке пароль попадает к мошенникам. Менять нужно быстро, а если пароль повторялся на других сайтах — менять везде." },
+    { t: "Кому можно сообщить свой пароль?", o: ["Лучшему другу — он же не расскажет", "Только родителям — и больше никому", "Никому, даже родителям", "Учителю информатики"], c: 1,
+      e: "Настоящие сотрудники сайтов и игр НИКОГДА не просят пароль. Своим — родителям — можно, всем остальным нельзя." }
+  ]},
+  { name: "🎣 Станция 2. Рыбаки на фишинге", img: svgPhish, q: [
+    { t: "Пришло письмо: «Вы выиграли 1 000 000 рублей! Пришлите номер карты для перевода». Что делать?", o: ["Отправить номер карты — выигрыш же!", "Отправить, но только первые цифры", "Ответить, чтобы уточнить детали", "Не отвечать и не открывать ссылки — удалить письмо"], c: 3,
+      e: "Настоящие розыгрыши не требуют данных карты. «Выигрыш», за который надо заплатить или что-то сообщить, — классическая ловушка мошенников." },
+    { t: "Сообщение: «Ваш аккаунт заблокирован! Срочно войдите по ссылке». Как поступить правильно?", o: ["Скорее перейти по ссылке", "Не переходить по ссылке, а открыть сайт или приложение самостоятельно и проверить там", "Ввести пароль в сообщении", "Переслать сообщение друзьям, пусть проверят"], c: 1,
+      e: "Ссылки в таких сообщениях ведут на поддельные сайты. Заходи всегда через официальное приложение или сайт — сам, своими руками." },
+    { t: "В игре незнакомец пишет: «Дай логин и пароль — отправлю бесплатно 1000 кристаллов!» Что делать?", o: ["Дать пароль — кристаллы же бесплатные", "Отказаться, заблокировать игрока и рассказать взрослым", "Дать пароль от другого аккаунта", "Попросить 2000 кристаллов"], c: 1,
+      e: "Такие «щедрые» игроки — воры аккаунтов. Бесплатные подарки за пароль не существуют. Расскажи взрослым — это важно." },
+    { t: "Какой признак выдаёт фишинговый сайт?", o: ["Красивый дизайн и много картинок", "Зелёная кнопка «Войти»", "Странный адрес (например, vodtbank-ochnaya.ru), ошибки в тексте и спешка: «только 5 минут!»", "Сайт медленно загружается"], c: 2,
+      e: "Фишеры копируют дизайн настоящих сайтов, но в адресе прячут подделку, в тексте бывают ошибки, а вас торопят — чтобы вы не задумались." }
+  ]},
+  { name: "🕵️ Станция 3. Секретные данные", img: svgSecret, q: [
+    { t: "Что безопасно публиковать в открытом профиле?", o: ["Фотографию паспорта или пропуска", "Домашний адрес и номер школы с классом", "Ник и аватарку — без личных данных", "Расписание, по которому тебя можно найти"], c: 2,
+      e: "По адресу школы и расписанию легко вычислить, где ты бываешь. В открытом профиле — только ник и аватарка, без личных данных." },
+    { t: "Незнакомец в сети просит прислать личное фото и обещает не показывать никому. Что делать?", o: ["Отказаться, заблокировать его и обязательно рассказать взрослым", "Прислать — он же обещал", "Спросить, зачем ему это", "Прислать, но в маске"], c: 0,
+      e: "Личные фото могут использовать для шантажа. Правильные шаги: отказ, блокировка, рассказ взрослому. Это не стукачество, а защита." },
+    { t: "Что такое геометки?", o: ["Новая компьютерная игра", "Отметки о погоде", "Специальные стикеры", "Данные о вашем местоположении — в фото, постах и настройках"], c: 3,
+      e: "Геометка на фото или в посте показывает, где ты живёшь или учишься. В настройках телефона её лучше выключить." },
+    { t: "Онлайн-опрос обещает смартфон за то, что ты укажешь адрес, номер телефона и данные паспорта. Это...", o: ["Отличный шанс — надо заполнить!", "Заполнить, но адрес написать неполный", "Обман: настоящие розыгрыши не требуют паспортных данных — закрой страницу", "Спросить у друзей в чате"], c: 2,
+      e: "Паспортные данные нужны мошенникам для оформления кредитов и махинаций. Розыгрыш, требующий паспорт, — всегда ловушка." }
+  ]},
+  { name: "🦠 Станция 4. Вирусное болото", img: svgVirus, q: [
+    { t: "На экране всплыло окно: «ВАШ ТЕЛЕФОН ЗАРАЖЁН! Нажмите ОК для очистки». Что делать?", o: ["Нажать ОК — телефон же заражён", "Перезагрузить телефон 10 раз", "Нажать ОК, но быстро-быстро", "Не нажимать ничего: закрыть окно и рассказать взрослым"], c: 3,
+      e: "Такие окна — ловушка. Нажатие ОК может запустить вредоносную программу. Закрывай страницу и звони в подкрепление — взрослых." },
+    { t: "В чате незнакомый пользователь прислал файл «free_game.exe». Что делать?", o: ["Скачать и установить — бесплатная игра!", "Не скачивать: файлы от незнакомцев — путь к вирусам", "Скачать, но не открывать", "Переслать другу, пусть он проверит"], c: 1,
+      e: "Файлы с расширением .exe из чатов и с подозрительных сайтов часто содержат вирусы. Ставь программы только из официальных магазинов." },
+    { t: "Зачем нужен антивирус?", o: ["Ускорять интернет в 10 раз", "Находить и блокировать вредоносные программы", "Чистить клавиатуру", "Делать красивые скриншоты"], c: 1,
+      e: "Антивирус — страж компьютера: он находит и обезвреживает вирусы до того, как они успеют навредить." },
+    { t: "Зачем устанавливать обновления программ и системы?", o: ["Ради новой иконки", "Ради рекламы", "Чтобы закрыть «дыры» в защите, через которые проникают вирусы", "Чтобы батарея разряжалась медленнее"], c: 2,
+      e: "Обновления — как заплатки на броне: они закрывают уязвимости, через которые вирусы пытаются пробраться внутрь." }
+  ]},
+  { name: "💬 Станция 5. Осторожно, общение", img: svgChat, q: [
+    { t: "В классном чате кого-то дразнят и присылают обидные картинки. Что делает настоящий кибердетектив?", o: ["Поддержать дразнилку — так веселей", "Поставить лайк и промолчать", "Не участвовать, поддержать того, кого дразнят, и рассказать взрослому", "Выйти из чата и забыть"], c: 2,
+      e: "Молчание — тоже участие. Кибербуллинг останавливается, когда кто-то говорит «стоп» и подключает взрослых." },
+    { t: "Что такое цифровой след?", o: ["Пыль на клавиатуре", "Всё, что вы оставляете в сети: посты, фото, комментарии, лайки — это остаётся навсегда", "Шагомер в телефоне", "Пароль из цифр"], c: 1,
+      e: "Интернет помнит всё. Удалённый пост может уже быть сохранён другими. Прежде чем опубликовать — подумай, как это будет выглядеть через 5 лет." },
+    { t: "Друг просит переслать всем личное фото третьего одноклассника «по приколу». Как поступить?", o: ["Переслать — все же смеются", "Изменить фото и переслать", "Пересылать, но не всем", "Не пересылать: без согласия человека его фото и секреты распространять нельзя"], c: 3,
+      e: "Личные фото и секреты — не для пересылки. За распространение таких материалов возможна и реальная ответственность." },
+    { t: "Тебе пишет незнакомец: «Привет! Сколько тебе лет? Где учишься? Давай встретимся». Как поступить?", o: ["Не отвечать, заблокировать и рассказать взрослым", "Ответить, но неправду", "Ответить — вдруг он хороший", "Договориться о встрече, но с другом"], c: 0,
+      e: "Незнакомцы в сети могут выдавать себя за кого угодно. Рассказывай взрослым о таких сообщениях — это лучшая стратегия безопасности." }
+  ]}
+];
+
+// ====== СОСТОЯНИЕ ======
+let cur = 0, score = 0, answered = false;
+const TOTAL = 20;
+
+function startGame() {
+  document.getElementById('startScreen').classList.add('hidden');
+  document.getElementById('gameScreen').classList.remove('hidden');
+  showQuestion();
+}
+
+function stationIndex() { return Math.floor(cur / 4); }
+
+function showQuestion() {
+  answered = false;
+  const s = stations[stationIndex()];
+  const q = s.q[cur % 4];
+  document.getElementById('stationLabel').textContent = `Станция ${stationIndex()+1}/5`;
+  document.getElementById('starsLabel').textContent = `⭐ ${score}`;
+  document.getElementById('qLabel').textContent = `Вопрос ${cur+1}/20`;
+  document.getElementById('progressBar').style.width = (cur / TOTAL * 100) + '%';
+  document.getElementById('stationImg').innerHTML = s.img;
+  document.getElementById('stationName').textContent = s.name;
+  document.getElementById('qNum').textContent = cur === 3 || cur === 7 || cur === 11 || cur === 15 || cur === 19
+      ? "последний вопрос станции — впереди переход!" : "";
+  document.getElementById('questionText').textContent = q.t;
+  const box = document.getElementById('optionsBox');
+  box.innerHTML = '';
+  const fb = document.getElementById('feedback');
+  fb.style.display = 'none'; fb.className = 'feedback';
+  document.getElementById('nextBtn').classList.add('hidden');
+  q.o.forEach((opt, i) => {
+    const b = document.createElement('button');
+    b.className = 'option'; b.textContent = opt;
+    b.onclick = () => answer(i, b);
+    box.appendChild(b);
+  });
+}
+
+function answer(i, btn) {
+  if (answered) return;
+  answered = true;
+  const s = stations[stationIndex()];
+  const q = s.q[cur % 4];
+  const buttons = document.querySelectorAll('#optionsBox .option');
+  buttons.forEach(b => b.disabled = true);
+  const fb = document.getElementById('feedback');
+  if (i === q.c) {
+    score++;
+    btn.classList.add('correct');
+    fb.classList.add('good');
+    fb.innerHTML = "✅ <b>Верно!</b> " + q.e;
+  } else {
+    btn.classList.add('wrong');
+    buttons[q.c].classList.add('correct');
+    fb.classList.add('bad');
+    fb.innerHTML = "❌ <b>Правильный ответ — «" + q.o[q.c] + "».</b> " + q.e;
+  }
+  document.getElementById('starsLabel').textContent = `⭐ ${score}`;
+  fb.style.display = 'block';
+  document.getElementById('nextBtn').classList.remove('hidden');
+  document.getElementById('nextBtn').textContent = cur === TOTAL - 1 ? "Получить звание 🏅" : "Далее ➜";
+}
+
+function nextQuestion() {
+  cur++;
+  if (cur >= TOTAL) { showEnd(); } else { showQuestion(); }
+}
+
+function showEnd() {
+  document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('endScreen').classList.remove('hidden');
+  document.getElementById('finalScore').textContent = score;
+  let rank, medal, msg;
+  if (score >= 18) { rank = "🏅 ГЛАВНЫЙ КИБЕРДЕТЕКТИВ"; medal = "🏆"; msg = "Блестяще! Ты знаешь все ловушки Глома и готов обучать других. Интернет в надёжных руках!"; }
+  else if (score >= 14) { rank = "🎖️ ОПЫТНЫЙ АГЕНТ КИБЕРАПАТРУЛЯ"; medal = "🎖️"; msg = "Отличный результат! Осталось закрыть пару «слепых зон» — перечитай пояснения к вопросам, где были ошибки."; }
+  else if (score >= 9) { rank = "📒 СТАЖЁР КИБЕРАПАТРУЛЯ"; medal = "📗"; msg = "Хорошее начало! Пройди квест ещё раз — и ловушки Глома больше тебя не напугают."; }
+  else { rank = "🌱 НАЧИНАЮЩИЙ ДЕТЕКТИВ"; medal = "🌱"; msg = "Не расстраивайся: даже великие детективы начинают с азов. Повтори правила безопасности и попробуй снова!"; }
+  document.getElementById('finalRank').textContent = rank;
+  document.getElementById('medal').textContent = medal;
+  document.getElementById('finalMsg').textContent = msg;
+}
+</script>
+</body>
+</html>
